@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">NT App</string>
+    <color name="myColor">#F5F5F5</color>
+    <string name="stgSettings">Einstellungen</string>
+    <string name="stgRemotePlugs">Funksteckdosen</string>
+    <string name="go_home">Startseite</string>
+    <string name="stgSkimmer1">Skimmer</string>
+    <string name="stgPumpe1">Pumpe (Einlauf)</string>
+    <string name="stgStrahler1">Strahler (Amphore)</string>
+    <string name="stgDeselectAll">keine auswählen</string>
+    <string name="stgSelectAll">alle auswählen</string>
+    <string name="stgSwitchOn">einschalten</string>
+    <string name="stgSwitchOff">ausschalten</string>
+
+
+</resources>

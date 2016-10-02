@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="socket" type="naturtalent.it.naturtalentapp.RemoteSocketData"/>
+        <variable name="presenter" type="naturtalent.it.naturtalentapp.SocketActivityPresenter"/>
+    </data>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@{socket.name}"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@={socket.name}" />
+
+        <Button
+            android:text="Show data model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> presenter.onShowData(socket)}"
+            android:id="@+id/button" />
+
+    </LinearLayout>
+</layout>
