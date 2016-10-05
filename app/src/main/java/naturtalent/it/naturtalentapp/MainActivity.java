@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import naturtalent.it.naturtalentapp.model.SocketModelUtil;
+
 
 //public class MainActivity extends AppCompatActivity
 public class MainActivity extends Activity
@@ -46,16 +48,8 @@ public class MainActivity extends Activity
         ma = this;
 
         // Vebindung zum Brick herstellen
-        new WiFiConnectTask().execute(new Object[]{});
+       // new WiFiConnectTask().execute(new Object[]{});
 
-        /*
-        WifiManager mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        mainWifi.startScan();
-        List<ScanResult> results = mainWifi.getScanResults();
-        */
-
-        // String accessNode = wifiInfo.getBSSID();implements SocketActivityContract.View
-        // System.out.println(accessNode);
 
 
     }
@@ -66,11 +60,13 @@ public class MainActivity extends Activity
         {
             case R.id.buttonSettings:
 
-                System.out.println("Einstellung");
+                //Intent intent = new Intent(this, SocketSettingActivity.class);
+                //startActivity(intent);
 
-                Intent intent = new Intent(this, SocketSettingActivity.class);
-                //Intent intent = new Intent(this, TestActivity.class);
-                startActivity(intent);
+                SocketModelUtil util = new SocketModelUtil();
+               // util.saveSockets(this, null);
+                List<RemoteSocketData> sockets = util.loadSockets(this);
+                //System.out.println(sockets);
 
                 break;
 
