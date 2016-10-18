@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable name="socket" type="naturtalent.it.naturtalentapp.RemoteSocketData"/>
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:id="@+id/lbl_socket_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bezeichnung"/>
+
+        <EditText
+            android:id="@+id/edit_socket_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:text="@={socket.name}"
+            android:inputType="text"/>
+
+        <TextView
+            android:id="@+id/lbl_socket_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Type"/>
+
+        <EditText
+            android:id="@+id/edit_socket_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:text="@={socket.type}"
+            android:inputType="text"/>
+
+        <TextView
+            android:id="@+id/lbl_socket_HouseCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="HouseCode"/>
+
+        <EditText
+            android:id="@+id/edit_socket_HouseCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:text="@={socket.houseCode}"
+            android:inputType="number"/>
+
+        <TextView
+            android:id="@+id/lbl_socket_remoteCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RemoteCode"/>
+
+        <!-- Urspruenglich wurde id == 'edit_socket_remoteCode'benutzt,
+             Dies fuehrte zu einem Fehler in der comutererzeugten Datei: DialogSocketBinding.
+             Error: variable edit_socket_remoteCode already exists
+             erst die o.g. Verkuerzung hat den Fehler beseitigt -->
+
+        <EditText
+            android:id="@+id/edit_socket_remCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:text="@={socket.remoteCode}"
+            android:inputType="number"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onDialogClick"
+                android:text="Abbruch"
+                android:id="@+id/btnCancel"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onDialogClick"
+                android:text="Ok"
+                android:id="@+id/btnOk"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

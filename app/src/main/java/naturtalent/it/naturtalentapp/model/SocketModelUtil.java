@@ -2,7 +2,6 @@ package naturtalent.it.naturtalentapp.model;
 
 import android.content.Context;
 import android.util.Xml;
-import android.widget.Button;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -10,9 +9,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,6 +29,9 @@ public class SocketModelUtil
     static private String SOCKET_DATA_FILE = "socketdata.xml";
 
     static private String SOCKET_ELEMENT = "Socket";
+
+    public static List<RemoteSocketData> remoteSockets;
+
 
     /**
      * RemoteSockets laden
@@ -122,6 +121,8 @@ public class SocketModelUtil
         if(sockets.isEmpty())
             sockets = getDefaultModel();
 
+        remoteSockets = sockets;
+        initializeSocketItems();
         return sockets;
     }
 
@@ -151,7 +152,7 @@ public class SocketModelUtil
 
             for(RemoteSocketData socket : sockets)
             {
-                serializeSocketOLD(xmlSerializer, socket);
+                serializeSocket(xmlSerializer, socket);
                 xmlSerializer.flush();
             }
 
@@ -172,7 +173,7 @@ public class SocketModelUtil
 
 
 
-    private void serializeSocketOLD (XmlSerializer xmlSerializer, RemoteSocketData socketData) throws IOException
+    private void serializeSocket(XmlSerializer xmlSerializer, RemoteSocketData socketData) throws IOException
     {
 
         // start Elemnt Socket
@@ -207,6 +208,7 @@ public class SocketModelUtil
     }
 
 
+    /*
     private String serializeSocket (RemoteSocketData socketData) throws IOException
     {
         XmlSerializer xmlSerializer = Xml.newSerializer();
@@ -248,7 +250,7 @@ public class SocketModelUtil
 
         return writer.toString();
     }
-
+*/
 
 
 
@@ -268,6 +270,82 @@ public class SocketModelUtil
     private RemoteSocketData get(String name, short houseCode, short remoteCode)
     {
         return new RemoteSocketData(name, houseCode, remoteCode);
+    }
+
+    /**
+     * An array of sample (dummy) items.
+     */
+    public static final List<RemoteSocketItem> ITEMS = new ArrayList<RemoteSocketItem>();
+
+    /**
+     * A map of sample (dummy) items, by ID.
+     */
+    public static final Map<String, RemoteSocketItem> ITEM_MAP = new HashMap<String, RemoteSocketItem>();
+
+    private static final int COUNT = 25;
+
+
+    private static void initializeSocketItems()
+    {
+        ITEMS.clear();
+        ITEM_MAP.clear();
+        for(int position = 0; position < remoteSockets.size(); position++)
+        {
+            if(position > COUNT)
+                break;
+
+            RemoteSocketData socket = remoteSockets.get(position);
+            addItem(createSocketItem(position, socket.getName()));
+        }
+    }
+
+    private static void addItem(RemoteSocketItem item)
+    {
+        ITEMS.add(item);
+        ITEM_MAP.put(item.id, item);
+    }
+
+    private static RemoteSocketItem createSocketItem(int position, String item)
+    {
+        return new RemoteSocketItem(String.valueOf(position + 1), item, makeDetails(position));
+    }
+
+    private static String makeDetails(int position)
+    {
+        RemoteSocketData socket = remoteSockets.get(position);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Bezeichnung: ").append(socket.getName());
+        builder.append("\n\nType: "+socket.getType());
+        builder.append("\nHausCode: "+socket.getHouseCode());
+        builder.append("\nGeräteCode: "+socket.getRemoteCode());
+
+
+        return builder.toString();
+    }
+
+
+    /**
+     * A dummy item representing a piece of content.
+     */
+    public static class RemoteSocketItem
+    {
+        public final String id; // identisch mit position
+        public final String content;
+        public final String details;
+
+        public RemoteSocketItem(String id, String content, String details)
+        {
+            this.id = id;
+            this.content = content;
+            this.details = details;
+        }
+
+        @Override
+        public String toString()
+        {
+            return content;
+        }
     }
 
 }

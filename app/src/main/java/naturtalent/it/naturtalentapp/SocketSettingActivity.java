@@ -10,6 +10,7 @@ import naturtalent.it.naturtalentapp.R;
 import naturtalent.it.naturtalentapp.RemoteSocketData;
 import naturtalent.it.naturtalentapp.SocketActivityContract;
 import naturtalent.it.naturtalentapp.databinding.ActivitySocketBinding;
+import naturtalent.it.naturtalentapp.databinding.DialogSocketBinding;
 
 /**
  * Created by dieter on 01.10.16.
@@ -19,6 +20,11 @@ import naturtalent.it.naturtalentapp.databinding.ActivitySocketBinding;
 public class SocketSettingActivity extends Activity implements SocketActivityContract.View
 {
 
+    /**
+     * Implementiert SocketActivityContract
+     *
+     * @param socketData
+     */
     @Override
     public void showData(RemoteSocketData socketData)
     {

@@ -3,12 +3,18 @@ package naturtalent.it.naturtalentapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.tinkerforge.BrickletRemoteSwitch;
 import com.tinkerforge.IPConnection;
@@ -18,11 +24,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import naturtalent.it.naturtalentapp.model.SocketModelUtil;
+import naturtalent.it.naturtalentapp.settings.SettingsActivity;
+import naturtalent.it.naturtalentapp.socketActivity.SocketActivity;
 
 
 //public class MainActivity extends AppCompatActivity
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
 {
     public static MainActivity ma;
 
@@ -51,7 +58,6 @@ public class MainActivity extends Activity
        // new WiFiConnectTask().execute(new Object[]{});
 
 
-
     }
 
     public void onClick(View view)
@@ -60,21 +66,42 @@ public class MainActivity extends Activity
         {
             case R.id.buttonSettings:
 
-                //Intent intent = new Intent(this, SocketSettingActivity.class);
-                //startActivity(intent);
+                // Settings
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
 
-                SocketModelUtil util = new SocketModelUtil();
-               // util.saveSockets(this, null);
-                List<RemoteSocketData> sockets = util.loadSockets(this);
-                //System.out.println(sockets);
+               /*
+               SocketModelUtil util = new SocketModelUtil();
+               util.saveSockets(this, null);
+               List<RemoteSocketData> sockets = util.loadSockets(this);
+
+               Intent intent = new Intent(this, SocketListActivity.class);
+               startActivity(intent);
+               */
 
                 break;
 
             // die View 'Funksteckdosen' anzeigen
             case R.id.button:
 
+                Intent intentSocket = new Intent(this, SocketActivity.class);
+                startActivity(intentSocket);
+
+                /*
                 setContentView(R.layout.remote_control);
                 ListView listView = (ListView) findViewById(R.id.listView);
+
+                Spinner dropdown = (Spinner)findViewById(R.id.spinnerFilter);
+                String[]items = new String[]{"all","Pumpen","Spots"};
+                ArrayAdapter<String>dropDownadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
+                dropdown.setAdapter(dropDownadapter);
+
+                setupActionBar();
+                */
+
+                /*
+
+                // button3 u. button4 sichtbar machen fuer update Status
                 button3 = (Button) findViewById(R.id.button3);
                 button4 = (Button) findViewById(R.id.button4);
 
@@ -90,12 +117,8 @@ public class MainActivity extends Activity
                 //new WiFiConnectTask().execute(listView);
 
                 updateWidgets(listView);
+                */
 
-                break;
-
-            // Zurueckbutton
-            case R.id.button2:
-                setContentView(R.layout.activity_main);
                 break;
 
             // selektierte Funksteckdosen einschalten
@@ -124,6 +147,14 @@ public class MainActivity extends Activity
 
 
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_socket, menu);
+        return true;
     }
 
     // ein-/ausschalten
@@ -262,6 +293,83 @@ public class MainActivity extends Activity
         super.onStop();
         System.out.println("stop");
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.action_socketDefinition:
+                startActivity(new Intent(this, SocketListActivity.class));
+
+                //Toast.makeText(this, "Funkschalter definieren selected", Toast.LENGTH_SHORT).show();
+                break;
+
+            case android.R.id.home:
+                startActivity(new Intent(this, MainActivity.class));
+                break;
+        }
+
+        return true;
+    }
+
+    /**
+     * Set up the {@link android.app.ActionBar}, if the API is available.
+     */
+
+    /*
+    private AppCompatDelegate mDelegate;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.action_socketDefinition:
+                Toast.makeText(this, "Funkschalter definieren selected", Toast.LENGTH_SHORT)
+                        .show();
+                break;
+
+            case android.R.id.home:
+                Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT)
+                        .show();
+                startActivity(new Intent(this, MainActivity.class));
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public MenuInflater getMenuInflater()
+    {
+        return getDelegate().getMenuInflater();
+    }
+
+    private void setupActionBar()
+    {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+        {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    public ActionBar getSupportActionBar()
+    {
+        return getDelegate().getSupportActionBar();
+    }
+
+    private AppCompatDelegate getDelegate()
+    {
+        if (mDelegate == null)
+        {
+            mDelegate = AppCompatDelegate.create(this, null);
+        }
+        return mDelegate;
+    }
+    */
 }
 
 

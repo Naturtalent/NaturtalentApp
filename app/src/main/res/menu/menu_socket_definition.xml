@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_socketDefinition_edit"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_build_black_24dp"
+        android:title="hinzufgen"/>
+
+    <item
+        android:id="@+id/action_socketDefinition_add"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_note_add_black_24dp"
+        android:title="editieren"/>
+
+    <item
+        android:id="@+id/action_socketDefinition_delete"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_delete_forever_black_24dp"
+        android:title="löschen"/>
+
+</menu>
