@@ -41,7 +41,7 @@ public class SocketSettingActivity extends Activity implements SocketActivityCon
         ActivitySocketBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_socket);
         SocketActivityPresenter socketActivityPresenter = new SocketActivityPresenter(this);
 
-        RemoteSocketData remoteSocketData = new RemoteSocketData("Pumpenschalter", (short) 1, (short) 1);
+        RemoteSocketData remoteSocketData = new RemoteSocketData("Pumpenschalter", "A", "1", "1");
         binding.setSocket(remoteSocketData);
         binding.setPresenter(socketActivityPresenter);
     }

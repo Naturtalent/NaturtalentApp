@@ -24,7 +24,7 @@ import naturtalent.it.naturtalentapp.databinding.DialogSocketBinding;
 public class SocketDataDialog extends DialogFragment implements TextView.OnEditorActionListener
 {
     // Dialogtitel
-    private String title = "Funksteckdose definieren";
+    private String title = "eine Funksteckdose definieren";
 
 
     private EditText mEditText;

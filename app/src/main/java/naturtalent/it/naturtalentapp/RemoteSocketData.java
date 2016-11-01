@@ -17,26 +17,27 @@ import java.util.Map;
  */
 public class RemoteSocketData extends BaseObservable
 {
-    static public final Character SOCKET_TYPE_A = 'A';
-    static public final Character SOCKET_TYPE_B = 'B';
+    static public final String SOCKET_TYPE_A = "A";
+    static public final String SOCKET_TYPE_B = "B";
+    static public final String SOCKET_TYPE_C = "C";
 
     private String name;
 
     private boolean selected;
 
-    private char type;
+    private String type;
 
-    private short houseCode;
+    private String houseCode;
 
-    private short remoteCode;
+    private String remoteCode;
 
-    public RemoteSocketData(String name, short houseCode, short remoteCode)
+    public RemoteSocketData(String name, String type, String houseCode, String remoteCode)
     {
         this.name = name;
+        this.type = type;
         this.houseCode = houseCode;
         this.remoteCode = remoteCode;
         this.selected = false;
-        this.setType(SOCKET_TYPE_B);
     }
 
     @Bindable
@@ -64,36 +65,54 @@ public class RemoteSocketData extends BaseObservable
     }
 
     @Bindable
-    public char getType()
+    public String getType()
     {
         return type;
     }
 
-    public void setType(char type)
+    public void setType(String type)
     {
         this.type = type;
         notifyPropertyChanged(naturtalent.it.naturtalentapp.BR.type);
     }
 
     @Bindable
-    public short getHouseCode()
+    public String getHouseCode()
     {
         return houseCode;
     }
 
-    public void setHouseCode(short houseCode)
+    public void setHouseCode(String houseCode)
     {
         this.houseCode = houseCode;
         notifyPropertyChanged(naturtalent.it.naturtalentapp.BR.houseCode);
     }
 
+    public void validate()
+    {
+        name = validateString (name, "neu");
+        houseCode = validateString (houseCode, "0");
+        remoteCode = validateString (remoteCode, "0");
+
+        type = validateString (type, "A");
+    }
+
+    private String validateString (String value, String defaultValue)
+    {
+        if(value != null)
+            value = value.trim();
+
+        value = ((value == null) || (value.isEmpty())) ? defaultValue : value;
+        return value;
+    }
+
     @Bindable
-    public short getRemoteCode()
+    public String getRemoteCode()
     {
         return remoteCode;
     }
 
-    public void setRemoteCode(short remoteCode)
+    public void setRemoteCode(String remoteCode)
     {
         this.remoteCode = remoteCode;
         notifyPropertyChanged(naturtalent.it.naturtalentapp.BR.remoteCode);

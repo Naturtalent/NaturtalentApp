@@ -3,11 +3,14 @@ package naturtalent.it.naturtalentapp;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,9 +57,17 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
     private boolean mTwoPane;
 
 
+    //private SimpleItemRecyclerViewAdapter.ViewHolder selectedViewHolder;
+
     private Menu menu;
 
-    private RemoteSocketData selectedSocket;
+    //private RemoteSocketData selectedSocket;
+
+    private SimpleItemRecyclerViewAdapter viewAdapter;
+
+    //private SimpleItemRecyclerViewAdapter.ViewHolder lastHolder;
+
+    private int selectedPosition = 0;
 
 
     @Override
@@ -143,9 +154,9 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
 
                 dialog = new SocketDataDialog();
                 dialog.setTitle("Funksteckdose bearbeiten");
-                dialog.setSocketData(selectedSocket);
+                dialog.setSocketData(SocketModelUtil.remoteSockets.get(selectedPosition));
                 dialog.show(manager, "socketDialog");
-
+                //Toast.makeText(this, "update", Toast.LENGTH_SHORT).show();
                 break;
 
             // Addaction
@@ -153,6 +164,8 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
 
                 dialog = new SocketDataDialog();
                 dialog.setTitle("neue Funksteckdose hinzufügen");
+
+                dialog.setSocketData(new RemoteSocketData("neu", RemoteSocketData.SOCKET_TYPE_A, null, null));
 
                 dialog.show(manager, "socketDialog");
 
@@ -162,12 +175,43 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             // Deleteaction
             case R.id.action_socketDefinition_delete:
 
+               if(selectedPosition >= 0)
+                {
+                    AlertDialog.Builder questionDialog = new AlertDialog.Builder(this);
+                    questionDialog.setTitle("Löschung");
+                    questionDialog.setMessage("Funksteckdose '"+SocketModelUtil.remoteSockets.get(selectedPosition).getName()+"' wirklich löschen ?");
+                    questionDialog.setIcon(R.drawable.ic_delete_forever_black_24dp);
 
-                MenuItem menuItem = menu.findItem(R.id.action_socketDefinition_edit);
-                if(menuItem != null)
-                     menuItem.setEnabled(false);
+                    // Dialog bestaetigt
+                    questionDialog.setPositiveButton("Ja",new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            // Datensatz entfernen
+                            viewAdapter.remove(selectedPosition);
 
-                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
+                            // Detailseite loeschen
+                            updateDetailsFragment(null);
+
+                            // das geanderte Modell speichern
+                            new SocketModelUtil().saveSockets(SocketListActivity.this.getBaseContext(), SocketModelUtil.remoteSockets);
+                        }
+                    });
+
+                    // Dialog abgebrochen
+                    questionDialog.setNegativeButton("Nein",new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+
+                        }
+                    });
+
+                    questionDialog.show();
+                }
+
                 break;
         }
 
@@ -188,91 +232,188 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
         {
             case R.id.btnCancel:
                 Toast.makeText(this, "Abbruch", Toast.LENGTH_SHORT).show();
-
                 break;
 
             case R.id.btnOk:
-                Toast.makeText(this, "Ok: Name: "+selectedSocket.getName()+"Type: "+selectedSocket.getType(), Toast.LENGTH_SHORT).show();
 
+               // if(selectedPosition )
 
+                /*
+                List<RemoteSocketData>remoteSockets = SocketModelUtil.remoteSockets;
+                if(remoteSockets.contains(selectedSocket))
+                {
+                    // existierenden Datensatz updaten
+                    viewAdapter.update(selectedSocket);
+                }
+                else
+                {
+                    // neuen Datensatz einfuegen
+                   // viewAdapter.add(selectedSocket);
+                }
 
+                //updateDetailsFragment(SocketModelUtil.findRemoteSocketItem(selectedSocket).id);
+                new SocketModelUtil().saveSockets(this.getBaseContext(), SocketModelUtil.remoteSockets);
+
+                */
 
                 break;
-
         }
 
         if (frag != null)
             manager.beginTransaction().remove(frag).commit();
-
     }
+
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView)
     {
-        List<RemoteSocketData> sockets = new SocketModelUtil().loadSockets(SocketListActivity.this);
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SocketModelUtil.ITEMS));
+        // die Funksteckdosendaten laden und die SocketItems an den Adapter uebergeben
+        List<RemoteSocketData>sockets = new SocketModelUtil().loadSockets(SocketListActivity.this);
+        viewAdapter = new SimpleItemRecyclerViewAdapter(sockets);
 
-        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(viewAdapter);
+
+        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SocketModelUtil.ITEMS));
+
+
     }
 
     @Override
     public void onFinishUserDialog(String name)
     {
-        Toast.makeText(this, "Name: "+name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Finish: Name: "+name, Toast.LENGTH_SHORT).show();
     }
 
 
+    /**
+     * Die Detailseite aktualisieren.
+     *
+     * @param value
+     */
+    private void updateDetailsFragment(String value)
+    {
+        if (mTwoPane)
+        {
+            Bundle arguments = new Bundle();
+            arguments.putString(SocketDetailFragment.ARG_ITEM_ID, value);
+            SocketDetailFragment fragment = new SocketDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.socket_detail_container, fragment)
+                    .commit();
+        }
+    }
+
+
+    /**
+     *
+     * Definition der Adapterklasse
+     *
+     */
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>
     {
 
-        //private final List<DummyContent.DummyItem> mValues;
-        private final List<SocketModelUtil.RemoteSocketItem> mValues;
+        private ViewGroup parentGroup;
 
-        public SimpleItemRecyclerViewAdapter(List<SocketModelUtil.RemoteSocketItem> socketItems)
+        // eine Liste mit den definierten Sockets
+        private final List<RemoteSocketData> mValues;
+
+        /**
+         * Konstruktion des Adapters
+         *
+         * Ein Adapter fuer die verfuegbaren Sockets.
+         *
+         * @param socketData
+         */
+        public SimpleItemRecyclerViewAdapter(List<RemoteSocketData> socketData)
         {
-            mValues = socketItems;
+            mValues = socketData;
         }
 
-
-        //private final List<RemoteSocketData>sockets = new SocketModelUtil().loadSockets(SocketListActivity.this);
-
-        /*
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items)
-        {
-
-            mValues = items;
-        }
-        */
-
+        /**
+         * Pro Zeile (Position) der Liste (RecyclerView) wird eine im Layoutfile
+         * definierte View uebernommen (inflate):
+         * Gespeichert wird diese View in einem neugenerierten ViewHolder.
+         *
+         * @param parent
+         * @param viewType
+         * @return
+         */
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
+            this.parentGroup = parent;
+
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.socket_list_content, parent, false);
             return new ViewHolder(view);
         }
 
+        /**
+         * Einen konkrete Datensatz der im ViewHolder gehaltenen View(s) zuordnen.
+         * Vergleichbar mit ContentLabelProvider.new Integer(selectedViewHolder.mContextIdx).intValue()
+         * Wird aufgerufen durch den layout manager.
+         *
+         * @param holder einer Zeile zugeordneten View(s)
+         * @param position Position (Index) des Datensatzes im Datenmodell
+         */
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position)
+        public void onBindViewHolder(final ViewHolder holder, final int position)
         {
-            // id und content von RemoteSocketItem in der Liste darstellen
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            // dem Holder einen Socket zuordnen
+            //holder.mContent = mValues.get(position);
+            //holder.mContextIdx = new Integer(position).toString();
 
+            // View zeigt den Namen des Sockets
+            RemoteSocketData socket = SocketModelUtil.remoteSockets.get(position);
+            holder.mContentView.setText(socket.getName());
+
+            // der holder bekommt seinen eigenen Listener
             holder.mView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    // den selektierten Datensatz sichern
-                    selectedSocket = SocketModelUtil.remoteSockets.get(new Integer(holder.mItem.id).intValue() - 1);
+                    // dieser Holder (Zeile in der Liste) wurde angeklickt.
+
+                    // die momentan selektierte Zeile demarkieren
+                    if(selectedPosition >= 0)
+                    {
+                        View holderView = parentGroup.getChildAt(selectedPosition);
+                        holderView.setBackgroundColor(Color.TRANSPARENT);
+                    }
+
+                    // diese neuangeklickte Zeile markieren
+                    v.setBackgroundColor(Color.CYAN);
+                    selectedPosition = position;
+
+                    /*
+                   for(int i = 0; i < viewAdapter.getItemCount(); i++)
+                   {
+                       View holderView = parentGroup.getChildAt(i);
+                       holderView.setBackgroundColor(Color.TRANSPARENT);
+                   }
+                   */
+
+
+
+                    /*
+                    if(lastHolder != null)
+                        lastHolder.mView.setBackgroundColor(Color.TRANSPARENT);
+                        */
+
+                    // neue Zeilenmarkiertung setzen
+                    //lastHolder = holder;
+                    //v.setBackgroundColor(Color.CYAN);
+
+                    // ueber das Id des selektierten Items den zugeordneten Datensatz speichern
+                    //selectedSocket = SocketModelUtil.remoteSockets.get(new Integer(holder.mItem.id).intValue());
 
                     if (mTwoPane)
                     {
                         Bundle arguments = new Bundle();
-                        arguments.putString(SocketDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
                         SocketDetailFragment fragment = new SocketDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -282,7 +423,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
                     {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, SocketDetailActivity.class);
-                        intent.putExtra(SocketDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
 
                         context.startActivity(intent);
                     }
@@ -296,18 +437,104 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             return mValues.size();
         }
 
+
+        public void update(RemoteSocketData socket)
+        {
+            SocketModelUtil.updateRemoteSocket(SocketModelUtil.remoteSockets.get(selectedPosition));
+
+            // Detailseite loeschen
+            updateDetailsFragment(new Integer(selectedPosition).toString());
+
+            notifyItemChanged(selectedPosition);
+        }
+
+        /**
+         * einen neuen Schalter einfuegen
+         * @param socket
+         */
+
+        public void add(RemoteSocketData socket)
+        {
+            //int position = (selectedViewHolder != null)
+        }
+
+        /*
+        public void add(RemoteSocketData socket)
+        {
+            View holderView = null;
+
+            int position = SocketModelUtil.addRemoteSocket(socket);
+
+            // vorhandene Selektionsmarkierung entfernen
+            for(int i = 0; i < viewAdapter.getItemCount()- 1; i++)
+            {
+                holderView = parentGroup.getChildAt(i);
+                holderView.setBackgroundColor(Color.TRANSPARENT);
+            }
+
+            // Detailseite loeschen
+            updateDetailsFragment(new Integer(position).toString());
+
+            // den neuen Eintrag zeigen
+            notifyItemInserted(position);
+
+            // hinzugefuegten Eintrq markieren
+            holderView = parentGroup.getChildAt(position);
+            if(holderView != null)
+                holderView.setBackgroundColor(Color.CYAN);
+        }
+        */
+
+        /**
+         * einen Schalter entfernen
+         *
+         */
+        public void remove(int position)
+        {
+            // den selektierten Datensatz entfernen
+            SocketModelUtil.remoteSockets.remove(position);
+
+            // ueber die geloeschte Position informieren
+            notifyItemRemoved(position);
+        }
+
+        /*
+        public void remove(RemoteSocketData socket)
+        {
+            int position = new Integer(selectedViewHolder.mContextIdx).intValue();
+            SocketModelUtil.remoteSockets.remove(position);
+
+
+            //int position = SocketModelUtil.removeRemoteSocket(socket);
+            notifyItemRemoved(position);
+        }
+        */
+
+
+        /**
+         *
+         * Definition der Klasse ViewHolder
+         * Beinhaltet alle Views die fuer die Anzeige eines Eintrags erforderlich
+         *
+         */
         public class ViewHolder extends RecyclerView.ViewHolder
         {
             public final View mView;
-            public final TextView mIdView;
             public final TextView mContentView;
-            public SocketModelUtil.RemoteSocketItem mItem;
+            //public String mContextIdx;                 // Index SocketData 'mContent' im Modell
+           // public RemoteSocketData mContent;       // SocketDatensatz
+            //public SocketModelUtil.RemoteSocketItem mItem;
 
+            /**
+             * Konstruktion
+             *
+             * @param view
+             */
             public ViewHolder(View view)
             {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
+                //mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 
@@ -316,6 +543,8 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
+
+
         }
     }
 

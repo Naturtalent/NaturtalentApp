@@ -2,6 +2,7 @@ package naturtalent.it.naturtalentapp.model;
 
 import android.content.Context;
 import android.util.Xml;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -89,18 +90,14 @@ public class SocketModelUtil
                 {
                     if (xpp.getName().equals(SOCKET_ELEMENT))
                     {
-                        // XML-Socketdaten komplett geparst
-                        Character type = new Character(parseMap.get("type").charAt(0));
+                        // jetzt ist XML-Socketdaten komplett geparst
+                        String type = parseMap.get("type");
 
                         // mit den geparsten XML-Socketdaten realen Socket generieren
-                        if(type.equals(RemoteSocketData.SOCKET_TYPE_B))
+                        if(type.equals(RemoteSocketData.SOCKET_TYPE_A))
                         {
-                            // Type B Socket
-                            String name = parseMap.get("name");
-                            short houseCode = new Short(parseMap.get("houseCode")).shortValue();
-                            short remoteCode = new Short(parseMap.get("remoteCode")).shortValue();
-
-                            RemoteSocketData socket = new RemoteSocketData(name, houseCode, remoteCode);
+                            // Type A Socket (Haus- und Remote(Receiver)code
+                            RemoteSocketData socket = new RemoteSocketData(parseMap.get("name"), RemoteSocketData.SOCKET_TYPE_A, parseMap.get("houseCode"), parseMap.get("remoteCode"));
                             sockets.add(socket);
                         }
                     }
@@ -108,21 +105,20 @@ public class SocketModelUtil
                 eventType = xpp.next();
             }
 
-        } catch (XmlPullParserException e)
-        {
-            System.out.println("Fehler beim Parsen");
-            e.printStackTrace();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            System.out.println("Fehler beim Lesen der Datendatei");
+            Toast.makeText(context, "Fehler beim Lesen der Datendatei\nEs werden Beispiele benutzt", Toast.LENGTH_SHORT).show();
+            sockets = null;
         }
 
-        if(sockets.isEmpty())
+        // mindestens die Defaultwerte laden
+        if((sockets == null) || (sockets.isEmpty()))
             sockets = getDefaultModel();
 
+        sockets = getDefaultModel();
+
         remoteSockets = sockets;
-        initializeSocketItems();
         return sockets;
     }
 
@@ -184,21 +180,21 @@ public class SocketModelUtil
         xmlSerializer.text(socketData.getName());
         xmlSerializer.endTag("", "name");
 
-        if(socketData.getType() == RemoteSocketData.SOCKET_TYPE_B)
+        if(socketData.getType().equals(RemoteSocketData.SOCKET_TYPE_A))
         {
             // type
             xmlSerializer.startTag("", "type");
-            xmlSerializer.text(new Character(socketData.getType()).toString());
+            xmlSerializer.text(socketData.getType());
             xmlSerializer.endTag("", "type");
 
             // houseCode
             xmlSerializer.startTag("", "houseCode");
-            xmlSerializer.text(new Short(socketData.getHouseCode()).toString());
+            xmlSerializer.text(socketData.getHouseCode());
             xmlSerializer.endTag("", "houseCode");
 
             // remoteCode
             xmlSerializer.startTag("", "remoteCode");
-            xmlSerializer.text(new Short(socketData.getRemoteCode()).toString());
+            xmlSerializer.text(socketData.getRemoteCode());
             xmlSerializer.endTag("", "remoteCode");
         }
 
@@ -208,131 +204,191 @@ public class SocketModelUtil
     }
 
 
-    /*
-    private String serializeSocket (RemoteSocketData socketData) throws IOException
-    {
-        XmlSerializer xmlSerializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        xmlSerializer.setOutput(writer);
 
-        // Start Document
-        xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-
-        // start Elemnt Socket
-        xmlSerializer.startTag("", SOCKET_ELEMENT);
-
-        // name
-        xmlSerializer.startTag("", "name");
-        xmlSerializer.text(socketData.getName());
-        xmlSerializer.endTag("", "name");
-
-        if(socketData.getType() == RemoteSocketData.SOCKET_TYPE_B)
-        {
-            // type
-            xmlSerializer.startTag("", "type");
-            xmlSerializer.text(new Character(socketData.getType()).toString());
-            xmlSerializer.endTag("", "type");
-
-            // houseCode
-            xmlSerializer.startTag("", "houseCode");
-            xmlSerializer.text(new Short(socketData.getHouseCode()).toString());
-            xmlSerializer.endTag("", "houseCode");
-
-            // remoteCode
-            xmlSerializer.startTag("", "remoteCode");
-            xmlSerializer.text(new Short(socketData.getRemoteCode()).toString());
-            xmlSerializer.endTag("", "remoteCode");
-        }
-
-        String string = writer.toString();
-        string = writer.getBuffer().toString();
-        StringBuffer buf = writer.getBuffer();
-
-        return writer.toString();
-    }
-*/
-
-
-
-
+    // Definiert Beispieldaten
     private List<RemoteSocketData> getDefaultModel()
     {
         List<RemoteSocketData> list = new ArrayList<RemoteSocketData>();
-        list.add(get("Pumpe 1", (short) 1, (short) 1));
-        list.add(get("Pumpe 2", (short) 1, (short) 2));
-        list.add(get("Spot 1", (short) 1, (short) 4));
-        list.add(get("Spot 2", (short) 1, (short) 8));
-
+        list.add(new RemoteSocketData("Pumpe1",RemoteSocketData.SOCKET_TYPE_A,"1","1"));
+        list.add(new RemoteSocketData("Pumpe2",RemoteSocketData.SOCKET_TYPE_A,"1","2"));
+        list.add(new RemoteSocketData("Skimmer",RemoteSocketData.SOCKET_TYPE_A,"1","4"));
+        list.add(new RemoteSocketData("Strahler",RemoteSocketData.SOCKET_TYPE_A,"1","8"));
         return list;
-    }
-
-
-    private RemoteSocketData get(String name, short houseCode, short remoteCode)
-    {
-        return new RemoteSocketData(name, houseCode, remoteCode);
     }
 
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<RemoteSocketItem> ITEMS = new ArrayList<RemoteSocketItem>();
+    public static final List<RemoteSocketData> ITEMS = new ArrayList<RemoteSocketData>();
 
     /**
-     * A map of sample (dummy) items, by ID.
+     * Eine Map die SocketData unter einer ID speichert.
+     * Die ID ist der Index des Datensatzes im Modell
      */
-    public static final Map<String, RemoteSocketItem> ITEM_MAP = new HashMap<String, RemoteSocketItem>();
+    public static final Map<String, RemoteSocketData> ITEM_MAP = new HashMap<String, RemoteSocketData>();
 
     private static final int COUNT = 25;
 
 
+    /**
+     * Ausgehen von den Socketdaten werden SocketItems definiert und in
+     * ITEMS und im Map ITEM_MAP gesoeichert.
+     */
+    /*
     private static void initializeSocketItems()
     {
+        // Itemsspeicher loeschen
         ITEMS.clear();
         ITEM_MAP.clear();
+
         for(int position = 0; position < remoteSockets.size(); position++)
         {
+            // Abbruch, wenn max. Anzahl erreicht
             if(position > COUNT)
                 break;
 
+            // Items erzeugen, gleicher Index(Position) wie SocketData, ItemID identisch mit poition
             RemoteSocketData socket = remoteSockets.get(position);
-            addItem(createSocketItem(position, socket.getName()));
+            addItem(new RemoteSocketItem(socket.getName(),makeDetails(socket)), socket);
         }
     }
+    */
 
-    private static void addItem(RemoteSocketItem item)
+    /*
+     * Ein SocketItem an einer definierten Position hinzufuegen.
+     */
+    /*
+    private static void addItem(RemoteSocketItem item, RemoteSocketData socket )
     {
         ITEMS.add(item);
+        ITEM_MAP.put(socket, item);
+    }
+    */
+
+
+    /*
+     * Ein SocketItem an einer definierten Position hinzufuegen.
+     */
+
+    /*
+    private static void addItem(int position, RemoteSocketItem item)
+    {
+        ITEMS.add(position,item);
         ITEM_MAP.put(item.id, item);
     }
+    */
 
-    private static RemoteSocketItem createSocketItem(int position, String item)
+    /*
+    public static int addRemoteSocket(RemoteSocketData socket)
     {
-        return new RemoteSocketItem(String.valueOf(position + 1), item, makeDetails(position));
+        socket.validate();
+        remoteSockets.add(socket);
+
+        int position = remoteSockets.size() - 1;
+        addItem(new RemoteSocketItem(socket.getName(),makeDetails(socket)),socket);
+        return position;
     }
 
-    private static String makeDetails(int position)
+    public static int removeRemoteSocket(RemoteSocketData socketData)
     {
-        RemoteSocketData socket = remoteSockets.get(position);
+        int position = remoteSockets.indexOf(socketData);
+        remoteSockets.remove(position);
 
+        // Items reorganisieren
+        initializeSocketItems();
+
+        return position;
+    }
+    */
+
+    /**
+     * SocketItem mit den mit den Socketdaten sysnchronisieren und die
+     * betroffene Postion zurueckgeben.
+     *
+     * @param socketData
+     * @return
+     */
+
+    public static int updateRemoteSocket(RemoteSocketData socketData)
+    {
+        socketData.validate();
+        int position = remoteSockets.indexOf(socketData);
+
+        /*
+        String itemID = new Integer(position).toString();
+        RemoteSocketItem item = ITEM_MAP.get(socketData);
+        item.master = socketData.getName();
+        item.details = makeDetails(socketData);
+        */
+
+        /*
+
+        // altes Item loeschen
+        String itemID = new Integer(position).toString();
+        RemoteSocketItem item = ITEM_MAP.get(itemID);
+        ITEMS.remove(item);
+        ITEM_MAP.remove(itemID);
+
+        // neues Item mit neuem Inhalt an alter Position einfuegen
+        RemoteSocketItem itemUpdate = createSocketItem(position, socketData.getName());
+        addItem(position, itemUpdate);
+
+        */
+
+        return position;
+    }
+
+    // ein einzelnes Item pro Socket generieren
+    /*
+    private static RemoteSocketItem createSocketItem(RemoteSocketData remoteSocketData)
+    {
+        return new RemoteSocketItem(remoteSocketData.getName(),makeDetails(remoteSocketData));
+    }
+    */
+
+    // generiert einen String der die Detailinformation eines Sockets repraesentiert.
+    public static String makeDetails(RemoteSocketData remoteSocketData)
+    {
         StringBuilder builder = new StringBuilder();
-        builder.append("Bezeichnung: ").append(socket.getName());
-        builder.append("\n\nType: "+socket.getType());
-        builder.append("\nHausCode: "+socket.getHouseCode());
-        builder.append("\nGeräteCode: "+socket.getRemoteCode());
-
+        builder.append("Bezeichnung: ").append(remoteSocketData.getName());
+        builder.append("\n\nType: "+remoteSocketData.getType());
+        builder.append("\nHausCode: "+remoteSocketData.getHouseCode());
+        builder.append("\nGeräteCode: "+remoteSocketData.getRemoteCode());
 
         return builder.toString();
     }
 
-
     /**
-     * A dummy item representing a piece of content.
+     * Item wird vom originaeren Socketdatensatz abgeleitet und benutzt um Details
+     * darzustellen.
      */
+
+    /*
     public static class RemoteSocketItem
     {
-        public final String id; // identisch mit position
-        public final String content;
-        public final String details;
+        public String master;    // Bezeichnung des Schalter (wird in Masterliste gezeigt)
+        public String details;    // in einem String zusammengefasste Deteilinformation
+
+        public RemoteSocketItem(String master, String details)
+        {
+            this.master = master;
+            this.details = details;
+        }
+
+        @Override
+        public String toString()
+        {
+            return master;
+        }
+    }
+*/
+
+    /*
+    public static class RemoteSocketItem
+    {
+        public String id;         // identisch mit position
+        public String content;    // Bezeichnung des Schalter (wird in Masterliste gezeigt)
+        public String details;    // in einem String zusammengefasste Deteilinformation
 
         public RemoteSocketItem(String id, String content, String details)
         {
@@ -347,5 +403,6 @@ public class SocketModelUtil
             return content;
         }
     }
+    */
 
 }

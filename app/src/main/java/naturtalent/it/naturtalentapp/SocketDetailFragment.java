@@ -27,10 +27,10 @@ public class SocketDetailFragment extends Fragment
      */
     public static final String ARG_ITEM_ID = "item_id";
 
-    /**
+    /**holder.mContextIdx
      * The dummy content this fragment is presenting.
      */
-    private SocketModelUtil.RemoteSocketItem mItem;
+    private RemoteSocketData mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -45,18 +45,20 @@ public class SocketDetailFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
+        // mit dem Argument ARG_ITEM_ID wird der Index des RemoteSocketDatensatzes uebergeben
         if (getArguments().containsKey(ARG_ITEM_ID))
         {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = SocketModelUtil.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            if(getArguments().getString(ARG_ITEM_ID) != null)
+            {
+                // den indexierten Datensatz in mItem hinterlegen
+                mItem = SocketModelUtil.remoteSockets.get(new Integer(getArguments().getString(ARG_ITEM_ID)).intValue());
+            }
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null)
             {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(mItem.getName());
             }
         }
     }
@@ -67,10 +69,10 @@ public class SocketDetailFragment extends Fragment
     {
         View rootView = inflater.inflate(R.layout.socket_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
+        // Detail des Datensatzes anzeigen
         if (mItem != null)
         {
-            ((TextView) rootView.findViewById(R.id.socket_detail)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.socket_detail)).setText(SocketModelUtil.makeDetails(mItem));
         }
 
         return rootView;

@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
                         // nur die selektierten Sockets werden geschaltet
                         try
                         {
-                            rs.switchSocketA(remoteSocket.getHouseCode(), remoteSocket.getRemoteCode(), switchCode);
+                            rs.switchSocketA(new Short(remoteSocket.getHouseCode()).shortValue(), new Short(remoteSocket.getRemoteCode()).shortValue(), switchCode);
                             Thread.sleep(500);
                             System.out.println(remoteSocket.getName() + " schalten");
                         } catch (Exception e)
@@ -188,22 +188,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    private List<RemoteSocketData> getModel()
-    {
-        List<RemoteSocketData> list = new ArrayList<RemoteSocketData>();
-        list.add(get("Pumpe Quellbecken", (short) 1, (short) 1));
-        list.add(get("Skimmer", (short) 1, (short) 2));
-        list.add(get("Spot Amphore", (short) 1, (short) 4));
-        list.add(get("Spot Teich", (short) 1, (short) 8));
-
-        return list;
-    }
-
-    private RemoteSocketData get(String name, short houseCode, short remoteCode)
-    {
-        return new RemoteSocketData(name, houseCode, remoteCode);
-    }
 
     // Checkstatus der gelisteten Sockets setzen
     private void setSocketViewStatus(boolean status)
