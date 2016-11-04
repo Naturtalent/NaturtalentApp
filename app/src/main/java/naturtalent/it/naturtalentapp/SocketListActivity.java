@@ -69,6 +69,8 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
 
     private int selectedPosition = 0;
 
+    private SocketDataDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -139,7 +141,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        SocketDataDialog dialog;
+
         FragmentManager manager = getFragmentManager();
 
         switch (item.getItemId())
@@ -189,7 +191,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
                         public void onClick(DialogInterface dialog, int which)
                         {
                             // Datensatz entfernen
-                            viewAdapter.remove(selectedPosition);
+                            viewAdapter.remove();
 
                             // Detailseite loeschen
                             updateDetailsFragment(null);
@@ -236,25 +238,23 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
 
             case R.id.btnOk:
 
-               // if(selectedPosition )
 
-                /*
-                List<RemoteSocketData>remoteSockets = SocketModelUtil.remoteSockets;
-                if(remoteSockets.contains(selectedSocket))
+                RemoteSocketData remoteSocket = dialog.getSocketData();
+                if(SocketModelUtil.remoteSockets.contains(remoteSocket))
                 {
                     // existierenden Datensatz updaten
-                    viewAdapter.update(selectedSocket);
+                    viewAdapter.update(remoteSocket);
                 }
                 else
                 {
-                    // neuen Datensatz einfuegen
-                   // viewAdapter.add(selectedSocket);
+                   // neuen Datensatz einfuegen
+                   viewAdapter.add(remoteSocket);
                 }
 
                 //updateDetailsFragment(SocketModelUtil.findRemoteSocketItem(selectedSocket).id);
                 new SocketModelUtil().saveSockets(this.getBaseContext(), SocketModelUtil.remoteSockets);
 
-                */
+
 
                 break;
         }
@@ -361,10 +361,6 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position)
         {
-            // dem Holder einen Socket zuordnen
-            //holder.mContent = mValues.get(position);
-            //holder.mContextIdx = new Integer(position).toString();
-
             // View zeigt den Namen des Sockets
             RemoteSocketData socket = SocketModelUtil.remoteSockets.get(position);
             holder.mContentView.setText(socket.getName());
@@ -375,60 +371,48 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
                 @Override
                 public void onClick(View v)
                 {
-                    // dieser Holder (Zeile in der Liste) wurde angeklickt.
 
-                    // die momentan selektierte Zeile demarkieren
                     if(selectedPosition >= 0)
                     {
                         View holderView = parentGroup.getChildAt(selectedPosition);
-                        holderView.setBackgroundColor(Color.TRANSPARENT);
+                        //holderView.setBackgroundColor(Color.TRANSPARENT);
                     }
 
-                    // diese neuangeklickte Zeile markieren
-                    v.setBackgroundColor(Color.CYAN);
                     selectedPosition = position;
 
-                    /*
-                   for(int i = 0; i < viewAdapter.getItemCount(); i++)
-                   {
-                       View holderView = parentGroup.getChildAt(i);
-                       holderView.setBackgroundColor(Color.TRANSPARENT);
-                   }
-                   */
-
-
-
-                    /*
-                    if(lastHolder != null)
-                        lastHolder.mView.setBackgroundColor(Color.TRANSPARENT);
-                        */
-
-                    // neue Zeilenmarkiertung setzen
-                    //lastHolder = holder;
                     //v.setBackgroundColor(Color.CYAN);
 
-                    // ueber das Id des selektierten Items den zugeordneten Datensatz speichern
-                    //selectedSocket = SocketModelUtil.remoteSockets.get(new Integer(holder.mItem.id).intValue());
-
-                    if (mTwoPane)
-                    {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
-                        SocketDetailFragment fragment = new SocketDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.socket_detail_container, fragment)
-                                .commit();
-                    } else
-                    {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, SocketDetailActivity.class);
-                        intent.putExtra(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
-
-                        context.startActivity(intent);
-                    }
+                    showDetails(selectedPosition);
                 }
             });
+        }
+
+        /**
+         * Details des selektierten Eintrags anzeigen.
+         *
+         * @param position
+         */
+        private void showDetails(int position)
+        {
+            if (mTwoPane)
+            {
+                Bundle arguments = new Bundle();
+                arguments.putString(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
+                SocketDetailFragment fragment = new SocketDetailFragment();
+                fragment.setArguments(arguments);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.socket_detail_container, fragment)
+                        .commit();
+            } else
+            {
+                View v = parentGroup.getChildAt(position);
+
+                Context context = v.getContext();
+                Intent intent = new Intent(context, SocketDetailActivity.class);
+                intent.putExtra(SocketDetailFragment.ARG_ITEM_ID, new Integer(position).toString());
+
+                context.startActivity(intent);
+            }
         }
 
         @Override
@@ -438,78 +422,75 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
         }
 
 
+        /**
+         *
+         * @param socket
+         */
         public void update(RemoteSocketData socket)
         {
-            SocketModelUtil.updateRemoteSocket(SocketModelUtil.remoteSockets.get(selectedPosition));
-
             // Detailseite loeschen
-            updateDetailsFragment(new Integer(selectedPosition).toString());
-
+            showDetails(selectedPosition);
             notifyItemChanged(selectedPosition);
         }
 
         /**
          * einen neuen Schalter einfuegen
-         * @param socket
+         *
+         * @param newSocket
          */
 
-        public void add(RemoteSocketData socket)
+        public void add(RemoteSocketData newSocket)
         {
-            //int position = (selectedViewHolder != null)
+            View holderView;
+
+
+            selectedPosition =  (selectedPosition < 0 ) ? 0 : selectedPosition;
+
+            //holderView = parentGroup.getChildAt(selectedPosition);
+            //holderView.setBackgroundColor(Color.TRANSPARENT);
+
+
+
+            // den neuen Datensatz
+            newSocket.validate();
+            SocketModelUtil.remoteSockets.add(selectedPosition, newSocket);
+
+            // ueber den neuen Eintrag informieren
+            notifyItemInserted(selectedPosition);
+
+            // Holderbindings aktualisieren
+            int n = getItemCount();
+            for(int i = 0;i < n;i++)
+                notifyItemChanged(i); // provoziert 'onBindViewHolder' Aufruf
+
+            showDetails(selectedPosition);
+
+            //holderView = parentGroup.getChildAt(selectedPosition);
+            //holderView.setBackgroundColor(Color.CYAN);
         }
-
-        /*
-        public void add(RemoteSocketData socket)
-        {
-            View holderView = null;
-
-            int position = SocketModelUtil.addRemoteSocket(socket);
-
-            // vorhandene Selektionsmarkierung entfernen
-            for(int i = 0; i < viewAdapter.getItemCount()- 1; i++)
-            {
-                holderView = parentGroup.getChildAt(i);
-                holderView.setBackgroundColor(Color.TRANSPARENT);
-            }
-
-            // Detailseite loeschen
-            updateDetailsFragment(new Integer(position).toString());
-
-            // den neuen Eintrag zeigen
-            notifyItemInserted(position);
-
-            // hinzugefuegten Eintrq markieren
-            holderView = parentGroup.getChildAt(position);
-            if(holderView != null)
-                holderView.setBackgroundColor(Color.CYAN);
-        }
-        */
 
         /**
          * einen Schalter entfernen
          *
          */
-        public void remove(int position)
+        public void remove()
         {
+            View holderView = parentGroup.getChildAt(selectedPosition);
+            holderView.setBackgroundColor(Color.TRANSPARENT);
+
             // den selektierten Datensatz entfernen
-            SocketModelUtil.remoteSockets.remove(position);
+            SocketModelUtil.remoteSockets.remove(selectedPosition);
 
             // ueber die geloeschte Position informieren
-            notifyItemRemoved(position);
+            notifyItemRemoved(selectedPosition);
+
+            // Holderbindings aktualisieren
+            int n = getItemCount();
+            for(int i = 0;i < n;i++)
+                notifyItemChanged(i); // provoziert 'onBindViewHolder' Aufruf
+
+            selectedPosition = (-1);
         }
-
-        /*
-        public void remove(RemoteSocketData socket)
-        {
-            int position = new Integer(selectedViewHolder.mContextIdx).intValue();
-            SocketModelUtil.remoteSockets.remove(position);
-
-
-            //int position = SocketModelUtil.removeRemoteSocket(socket);
-            notifyItemRemoved(position);
-        }
-        */
-
 
         /**
          *
@@ -521,9 +502,6 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
         {
             public final View mView;
             public final TextView mContentView;
-            //public String mContextIdx;                 // Index SocketData 'mContent' im Modell
-           // public RemoteSocketData mContent;       // SocketDatensatz
-            //public SocketModelUtil.RemoteSocketItem mItem;
 
             /**
              * Konstruktion
@@ -534,7 +512,6 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             {
                 super(view);
                 mView = view;
-                //mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 

@@ -90,4 +90,9 @@ public class SocketDataDialog extends DialogFragment implements TextView.OnEdito
     {
         this.socketData = socketData;
     }
+
+    public RemoteSocketData getSocketData()
+    {
+        return socketData;
+    }
 }
