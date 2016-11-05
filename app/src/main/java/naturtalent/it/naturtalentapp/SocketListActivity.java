@@ -365,6 +365,12 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             RemoteSocketData socket = SocketModelUtil.remoteSockets.get(position);
             holder.mContentView.setText(socket.getName());
 
+            // versuch
+            if(selectedPosition == position)
+                holder.itemView.setBackgroundColor(Color.CYAN);
+            else
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+
             // der holder bekommt seinen eigenen Listener
             holder.mView.setOnClickListener(new View.OnClickListener()
             {
@@ -372,15 +378,21 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
                 public void onClick(View v)
                 {
 
+                    notifyItemChanged(selectedPosition);
+                    selectedPosition = position;
+                    notifyItemChanged(selectedPosition);
+
+                    /*
                     if(selectedPosition >= 0)
                     {
                         View holderView = parentGroup.getChildAt(selectedPosition);
-                        //holderView.setBackgroundColor(Color.TRANSPARENT);
+                        holderView.setBackgroundColor(Color.TRANSPARENT);
                     }
 
                     selectedPosition = position;
 
-                    //v.setBackgroundColor(Color.CYAN);
+                    v.setBackgroundColor(Color.CYAN);
+                    */
 
                     showDetails(selectedPosition);
                 }
