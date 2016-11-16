@@ -16,6 +16,12 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
+    <string name="pref_default_wifiname">WiFi Name</string>
+    <string name="pref_default_wifiport">4223</string>
+
+    <!-- Hardware settings -->
+    <string name="pref_title_WiFi_name">WiFi Name</string>
+    <string name="pref_title_WiFi_port">WiFi Port</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
@@ -42,6 +48,7 @@
 
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
+    <string name="pref_header_hardware">Hardware</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string-array name="pref_sync_frequency_titles">

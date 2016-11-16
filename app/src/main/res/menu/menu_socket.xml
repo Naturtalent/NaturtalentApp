@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+startActivity(new Intent(this, MainActivity.class));
 
+
+    <!-- Menuepunkt 'Definition Funksteckdosen' -->
     <item
         android:id="@+id/action_socketDefinition"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_settings_input_svideo_black_24dp"
-        android:title="Definitionx"/>
+        android:title="Definition"/>
 
-
+    <!-- Menuepunkt 'Einstellungen'  -->
     <item
         android:id="@+id/action_settings"
         app:showAsAction="never"
         android:title="Einstellungen"/>
+
+    <!-- Menuepunkt 'Beispieldaten Funksteckdosen'  -->
+    <item
+        android:id="@+id/action_socketdefault_settings"
+        app:showAsAction="never"
+        android:title="Beispiel Funksteckdosen"/>
 
 </menu>

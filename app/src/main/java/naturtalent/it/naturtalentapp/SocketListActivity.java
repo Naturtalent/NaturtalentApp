@@ -67,7 +67,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
 
     //private SimpleItemRecyclerViewAdapter.ViewHolder lastHolder;
 
-    private int selectedPosition = 0;
+    private int selectedPosition = (-1);
 
     private SocketDataDialog dialog;
 

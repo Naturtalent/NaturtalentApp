@@ -11,8 +11,8 @@ public class WiFiConnectTask extends AsyncTask
 {
 
     //private static final String HOST = "localhost";
-    public static final String HOST = "wifi-extension-v1";
-    public static final int PORT = 4223;
+    private String HOST = "wifi-extension-v1";
+    private int PORT = 4223;
 
     // UID des Remote Switch Bricklet
     //private static final String UID = "v1T";
@@ -21,6 +21,11 @@ public class WiFiConnectTask extends AsyncTask
     // IPConnection - statisch definiert
     private static IPConnection ipcon = null;
 
+    public WiFiConnectTask(String HOST, int PORT)
+    {
+        this.HOST = HOST;
+        this.PORT = PORT;
+    }
 
     @Override
     protected Object doInBackground(Object[] objects)

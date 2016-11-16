@@ -115,9 +115,7 @@ public class SocketModelUtil
         // mindestens die Defaultwerte laden
         if((sockets == null) || (sockets.isEmpty()))
             sockets = getDefaultModel();
-
-        sockets = getDefaultModel();
-
+        
         remoteSockets = sockets;
         return sockets;
     }

@@ -1,12 +1,10 @@
 package naturtalent.it.naturtalentapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,10 +19,10 @@ import com.tinkerforge.IPConnection;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import naturtalent.it.naturtalentapp.settings.SettingsActivity;
+import naturtalent.it.naturtalentapp.socketActivity.ExampleSocketsActivity;
 import naturtalent.it.naturtalentapp.socketActivity.SocketActivity;
 
 
@@ -46,6 +44,14 @@ public class MainActivity extends AppCompatActivity
 
     List<RemoteSocketData> remoteSockets;
 
+    // WiFi - Connetionparameter
+    public static final String DEFAULT_WIFI_PREFERNVE_HOST = "wifi-extension-v1";
+    private String HOST = DEFAULT_WIFI_PREFERNVE_HOST;
+    public static final String DEFAULT_WIFI_PREFERNVE_PORT = "4223";
+    private String PORT = DEFAULT_WIFI_PREFERNVE_PORT;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -57,6 +63,9 @@ public class MainActivity extends AppCompatActivity
         // Vebindung zum Brick herstellen
        // new WiFiConnectTask().execute(new Object[]{});
 
+       // SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+       // String s = settings.getString("wifi_name",R.string.pref_default_wifiname_value);
+       // System.out.println(s);
 
     }
 
@@ -149,6 +158,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Menues einbinden (z.B. Settings)
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -278,17 +293,37 @@ public class MainActivity extends AppCompatActivity
         System.out.println("stop");
     }
 
+    /**
+     * Reaktion auf die Selektion eines Menuepunktes in der Toolbar
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        Intent intent;
+
         switch (item.getItemId())
         {
+            // Funksteckdosen definieren
             case R.id.action_socketDefinition:
                 startActivity(new Intent(this, SocketListActivity.class));
-
-                //Toast.makeText(this, "Funkschalter definieren selected", Toast.LENGTH_SHORT).show();
                 break;
 
+            // sonstige Settings (Praeferenzen) (WiFi, Tinkerforge)
+            case R.id.action_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+
+            // Beispieldaten Funksteckdosen setzen
+            case R.id.action_socketdefault_settings:
+                intent = new Intent(this, ExampleSocketsActivity.class);
+                startActivity(intent);
+                break;
+
+            // Zurueck
             case android.R.id.home:
                 startActivity(new Intent(this, MainActivity.class));
                 break;
@@ -297,9 +332,60 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    private class WiFiConnectTask extends AsyncTask
+    {
+
+        @Override
+        protected IPConnection doInBackground(Object[] objects)
+        {
+            ipcon = new IPConnection();
+
+            while (true)
+            {
+                try
+                {
+                    System.out.println("Start Connect");
+                    ipcon.connect(HOST, new Integer(PORT).intValue());
+
+                    break;
+
+                } catch (Exception e)
+                {
+                    System.out.println("exception Connect");
+                }
+
+                try
+                {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e)
+                {
+                }
+            }
+
+            return ipcon;
+        }
+
+
+        protected void onPostExecute(IPConnection result)
+        {
+            Toast.makeText(ma, "verbunden mit Host: "+HOST+" Port: "+PORT, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void setHOST(String HOST)
+    {
+        this.HOST = HOST;
+    }
+
+    public void setPORT(String PORT)
+    {
+        this.PORT = PORT;
+    }
+
     /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
+         * Set up the {@link android.app.ActionBar}, if the API is available.
+         */
 
     /*
     private AppCompatDelegate mDelegate;

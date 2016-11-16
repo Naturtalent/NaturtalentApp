@@ -56,6 +56,8 @@
             android:label="@string/title_activity_socket"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".socketActivity.ExampleSocketsActivity">
+        </activity>
     </application>
 
 </manifest>

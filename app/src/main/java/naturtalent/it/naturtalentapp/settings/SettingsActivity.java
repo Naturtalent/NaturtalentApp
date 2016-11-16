@@ -4,6 +4,7 @@ package naturtalent.it.naturtalentapp.settings;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -23,7 +24,10 @@ import android.view.MenuItem;
 import naturtalent.it.naturtalentapp.MainActivity;
 import naturtalent.it.naturtalentapp.R;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -38,6 +42,10 @@ import java.util.List;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity
 {
+
+    private static Map<String, Preference> bindPreferenceMap = new HashMap<>();
+
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -91,7 +99,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 
             } else
             {
-                // For all other preferences, set the summary to the value's
+                // For all other preferences, set the summary to the value's  -->
                 // simple string representation.
                 preference.setSummary(stringValue);
             }
@@ -120,6 +128,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity
      */
     private static void bindPreferenceSummaryToValue(Preference preference)
     {
+        String s = preference.getKey();
+        bindPreferenceMap.put(preference.getKey(), preference);
+
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
@@ -183,6 +194,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
     }
 
+
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
@@ -211,6 +223,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             int id = item.getItemId();
             if (id == android.R.id.home)
             {
+                onHomeAction();
                 startActivity(new Intent(getActivity(), MainActivity.class));
                 return true;
             }
@@ -245,7 +258,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             int id = item.getItemId();
             if (id == android.R.id.home)
             {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                onHomeAction();
+                startActivity(new Intent(getActivity(), MainActivity.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -270,7 +284,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            bindPreferenceSummaryToValue(findPreference("wifi_name"));
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+
+
         }
 
         @Override
@@ -279,10 +296,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             int id = item.getItemId();
             if (id == android.R.id.home)
             {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                onHomeAction();
+                startActivity(new Intent(getActivity(), MainActivity.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
         }
+
+        /*
+        @Override
+        protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue)
+        {
+
+        }
+        */
     }
+
+    private static void onHomeAction()
+    {
+        /**
+        Preference preference = bindPreferenceMap.get(R.string.pref_wifiname_key);
+        if(preference != null)
+        {
+            SharedPreferences sharedPreferences = preference.getSharedPreferences();
+            String host = sharedPreferences.getString("wifi_name",MainActivity.DEFAULT_WIFI_PREFERNVE_HOST);
+            MainActivity.ma.setHOST(host);
+        }
+         */
+    }
+
+
 }
