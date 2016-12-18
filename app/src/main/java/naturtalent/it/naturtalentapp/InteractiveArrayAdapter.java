@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -11,6 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import naturtalent.it.naturtalentapp.socketActivity.SocketActivity;
 
 /**
  * Created by dieter on 03.09.16.
@@ -32,10 +35,10 @@ public class InteractiveArrayAdapter extends ArrayAdapter<RemoteSocketData>
         this.list = list;
     }
 
-    static class ViewHolder
+    static public class ViewHolder
     {
-        protected TextView text;
-        protected CheckBox checkBox;
+        public TextView text;
+        public CheckBox checkBox;
     }
 
     public View getView(int position, View convertView, ViewGroup parent)
@@ -55,7 +58,10 @@ public class InteractiveArrayAdapter extends ArrayAdapter<RemoteSocketData>
                 {
                     RemoteSocketData element = (RemoteSocketData) viewHolder.checkBox.getTag();
                     element.setSelected(buttonView.isChecked());
-                    MainActivity.updateWidgets(listView);
+
+                    ViewParent parent = buttonView.getParent().getParent();
+                    if(parent instanceof ListView)
+                        SocketActivity.sa.updateWidgets((ListView)parent);
                 }
             });
 
@@ -81,13 +87,5 @@ public class InteractiveArrayAdapter extends ArrayAdapter<RemoteSocketData>
         return list;
     }
 
-    public ListView getListView()
-    {
-        return listView;
-    }
 
-    public void setListView(ListView listView)
-    {
-        this.listView = listView;
-    }
 }

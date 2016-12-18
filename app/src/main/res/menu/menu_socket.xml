@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-startActivity(new Intent(this, MainActivity.class));
-
 
     <!-- Menuepunkt 'Definition Funksteckdosen' -->
     <item
@@ -16,6 +14,12 @@ startActivity(new Intent(this, MainActivity.class));
         android:id="@+id/action_settings"
         app:showAsAction="never"
         android:title="Einstellungen"/>
+
+    <!-- Menuepunkt 'Verbindung herstellen'  -->
+    <item
+        android:id="@+id/action_connection"
+        app:showAsAction="never"
+        android:title="Verbindung herstellen"/>
 
     <!-- Menuepunkt 'Beispieldaten Funksteckdosen'  -->
     <item

@@ -159,7 +159,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         if (actionBar != null)
         {
             // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
     }
 
@@ -285,8 +285,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("wifi_name"));
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-
+            bindPreferenceSummaryToValue(findPreference("wifi_port"));
+            bindPreferenceSummaryToValue(findPreference("brick_id"));
 
         }
 

@@ -36,20 +36,36 @@
     </LinearLayout>
 
     <!-- SchalterListe -->
+
+    <ScrollView
+        android:id="@+id/scrollListView"
+        android:layout_below="@+id/linearLayoutFilter"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:padding="8dip"
+        android:scrollbarStyle="insideOverlay"
+        android:background="@android:color/white"
+        android:overScrollMode="never">
+
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayoutFilter"
-        android:id="@+id/linearListLayout">
+        android:id="@+id/linearListLayout"
+        android:weightSum="1">
 
         <ListView
-            android:layout_width="321dp"
-            android:layout_height="259dp"
-            android:id="@+id/listView"
+            android:layout_width="wrap_content"
+            android:layout_height="250dp"
+            android:id="@+id/socketListView"
             android:layout_marginTop="20dp"
-            android:background="@color/background_material_light"/>
+            android:background="@color/background_material_light"
+            android:layout_weight="4.90" />
     </LinearLayout>
+
+    </ScrollView>
 
     <!-- alle/keine auswaehlen -->
     <LinearLayout
@@ -57,12 +73,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearListLayout"
-        android:layout_marginTop="0dp"
+        android:layout_below="@+id/scrollListView"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/btnAllSelect"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
@@ -71,7 +87,7 @@
             android:textSize="10dp"/>
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/btnAllDeselect"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
@@ -89,7 +105,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/linearLayoutSelectAll"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <Button

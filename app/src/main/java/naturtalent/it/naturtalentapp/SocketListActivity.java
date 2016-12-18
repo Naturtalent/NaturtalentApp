@@ -98,7 +98,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
         {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
 
         View recyclerView = findViewById(R.id.socket_list);
@@ -154,11 +154,14 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
             // Editaction
             case R.id.action_socketDefinition_edit:
 
-                dialog = new SocketDataDialog();
-                dialog.setTitle("Funksteckdose bearbeiten");
-                dialog.setSocketData(SocketModelUtil.remoteSockets.get(selectedPosition));
-                dialog.show(manager, "socketDialog");
-                //Toast.makeText(this, "update", Toast.LENGTH_SHORT).show();
+                if(selectedPosition >= 0)
+                {
+                    dialog = new SocketDataDialog();
+                    dialog.setTitle("Funksteckdose bearbeiten");
+                    dialog.setSocketData(SocketModelUtil.remoteSockets.get(selectedPosition));
+                    dialog.show(manager, "socketDialog");
+                    //Toast.makeText(this, "update", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             // Addaction
@@ -193,7 +196,7 @@ public class SocketListActivity extends AppCompatActivity implements SocketDataD
                             // Datensatz entfernen
                             viewAdapter.remove();
 
-                            // Detailseite loeschen
+                            // Detailseite loeschen, es gibt nichts mehr anzuzeigen
                             updateDetailsFragment(null);
 
                             // das geanderte Modell speichern

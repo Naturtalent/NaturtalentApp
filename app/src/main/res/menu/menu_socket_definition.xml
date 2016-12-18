@@ -6,13 +6,13 @@
         android:id="@+id/action_socketDefinition_edit"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_build_black_24dp"
-        android:title="hinzufgen"/>
+        android:title="bearbeitem"/>
 
     <item
         android:id="@+id/action_socketDefinition_add"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_note_add_black_24dp"
-        android:title="editieren"/>
+        android:title="hinzufügen"/>
 
     <item
         android:id="@+id/action_socketDefinition_delete"

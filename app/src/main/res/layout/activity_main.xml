@@ -18,8 +18,8 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/stgSettings"
-            android:id="@+id/buttonSettings"
+            android:text="@string/stgRemotePlugs"
+            android:id="@+id/button"
             android:onClick="onClick"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
@@ -27,11 +27,12 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/stgRemotePlugs"
-            android:id="@+id/button"
+            android:text="@string/stgSettings"
+            android:id="@+id/buttonSettings"
             android:onClick="onClick"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
+
 
     </LinearLayout>
 </RelativeLayout>
